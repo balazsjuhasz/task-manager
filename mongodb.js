@@ -1,7 +1,6 @@
 // CRUD Create read update delete
 
-const mongodb = require('mongodb');
-const MongoClient = mongodb.MongoClient;
+const { MongoClient, ObjectID } = require('mongodb');
 
 const connectionURL = 'mongodb://127.0.0.1:27017';
 const databaseName = 'task-manager';
@@ -16,62 +15,38 @@ MongoClient.connect(
 
     const db = client.db(databaseName);
 
-    // db.collection('users').insertOne(
-    //   {
-    //     name: 'Balazs',
-    //     age: 38,
-    //   },
-    //   (error, result) => {
-    //     if (error) {
-    //       return console.log('Unable to insert user');
-    //     }
-
-    //     console.log(result.ops);
-    //   }
-    // );
-
-    // db.collection('users').insertMany(
-    //   [
+    // db.collection('users')
+    //   .updateOne(
     //     {
-    //       name: 'Bela',
-    //       age: 53,
+    //       _id: ObjectID('60311f51f9d1dc135d0e42b3'),
     //     },
     //     {
-    //       name: 'Mate',
-    //       age: 31,
-    //     },
-    //   ],
-    //   (error, result) => {
-    //     if (error) {
-    //       return console.log('Unable to insert documents');
+    //       $inc: {
+    //         age: 1,
+    //       },
     //     }
+    //   )
+    //   .then((result) => {
+    //     console.log(result);
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
 
-    //     console.log(result.ops);
-    //   }
-    // );
-
-    db.collection('tasks').insertMany(
-      [
+    db.collection('tasks')
+      .updateMany(
+        { completed: false },
         {
-          description: 'Shopping',
-          completed: false,
-        },
-        {
-          description: 'Housework',
-          completed: true,
-        },
-        {
-          description: 'Play piano',
-          completed: true,
-        },
-      ],
-      (error, result) => {
-        if (error) {
-          return console.log('Unable to insert tasks');
+          $set: {
+            completed: true,
+          },
         }
-
-        console.log(result.ops);
-      }
-    );
+      )
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 );
