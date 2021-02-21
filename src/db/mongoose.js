@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const connectionURL = 'mongodb://127.0.0.1:27017/task-manager-api';
 const connectionOptions = {
@@ -12,15 +13,46 @@ mongoose.connect(connectionURL, connectionOptions);
 const User = mongoose.model('User', {
   name: {
     type: String,
+    required: true,
+    trim: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    trim: true,
+    lowercase: true,
+    validate(value) {
+      if (!validator.isEmail(value)) {
+        throw new Error('Email is invalid');
+      }
+    },
+  },
+  password: {
+    type: String,
+    required: true,
+    minLength: 7,
+    trim: true,
+    validate(value) {
+      if (value.toLowerCase().includes('password')) {
+        throw new Error('Password cannot contain "password"');
+      }
+    },
   },
   age: {
     type: Number,
+    default: 0,
+    validate(value) {
+      if (value < 0) {
+        throw new Error('Age must be a positive number');
+      }
+    },
   },
 });
 
 // const me = new User({
-//   name: 'Andrew',
-//   age: 'Mike',
+//   name: '      Andrew   ',
+//   email: 'MYEMAIL@MEAD.IO    ',
+//   password: 'password2',
 // });
 
 // me.save()
@@ -30,15 +62,17 @@ const User = mongoose.model('User', {
 const Task = mongoose.model('Task', {
   description: {
     type: String,
+    required: true,
+    trim: true,
   },
   completed: {
     type: Boolean,
+    default: false,
   },
 });
 
 const newTask = new Task({
-  description: 'Housework',
-  completed: false,
+  description: 'Watering',
 });
 
 newTask
